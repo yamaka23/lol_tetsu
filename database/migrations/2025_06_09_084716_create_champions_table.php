@@ -12,12 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('champions', function (Blueprint $table) {
-            $table->string('id')->primary();
-            $table->string('name');
-            $table->string('image')->nullable();
-            $table->integer('difficulty')->default(0);
-            $table->string('version')->nullable();
-            $table->string('language')->default('ja_JP');
+            $table->string('id')->primary(); // チャンピオンIDは一意
+            $table->string('name'); // チャンピオン名は一意
+            $table->string('image')->nullable(); // 画像URLはオプション
+            $table->string('language')->default('ja_JP'); // 言語はデフォルトで日本語
+            $table->string('version')->nullable(); // バージョン
             $table->timestamps();
         });
     }

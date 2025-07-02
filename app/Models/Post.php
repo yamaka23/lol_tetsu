@@ -1,36 +1,47 @@
 <?php
-
 namespace App\Models;
-
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Rune;
+use App\Models\Item;
+use App\Models\Lane;
+use App\Models\Champion;
 use Illuminate\Database\Eloquent\Model;
 
 class Post extends Model
 {
-    use HasFactory;
-
+    // ...既存の use や fillable の定義など...
     protected $fillable = [
+        'id',
+        'user_id',
+        'lane_id',
+        'champion_id',
         'title',
-        'body',
-        'category_id'
+        'content',
+        'created_at',
+        'updated_at',
     ];
-    
-    public function getByLimit(int $limit_count = 3)
+
+    // レーン（1対多）
+    public function lane()
     {
-    // updated_atで降順に並べたあと、limitで件数制限をかける
-        return $this->orderBy('updated_at', 'DESC')->limit($limit_count)->get();
+        return $this->belongsTo(Lane::class);
     }
 
-    public function getPaginateByLimit(int $limit_count = 5)
+    // チャンピオン（1対多）
+    public function champion()
     {
-        return $this::with('category')->orderBy('updated_at', 'DESC')->paginate($limit_count);
+        return $this->belongsTo(Champion::class);
     }
-    // Categoryに対するリレーション
-    //「1対多」の関係なので単数系に
-    public function category()
+
+    // ルーン（多対多）
+    public function runes()
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsToMany(Rune::class);
     }
-    
+
+    // アイテム（多対多＋順序つきなら order も欲しい）
+    public function items()
+    {
+        return $this->belongsToMany(Item::class, 'post_item');
+        
+    }
 }
-

@@ -4,6 +4,8 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ChampionController;
+use App\Http\Controllers\ItemController;
+use App\Http\Controllers\RuneController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,9 +17,8 @@ use App\Http\Controllers\ChampionController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-
-Route::get('/', function () {
-    return view('posts.index'); 
+Route::get('/',function(){
+ return view('welcome');
 });
 
 Route::get('/dashboard', function () {
@@ -30,11 +31,23 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::get('/posts/create', [PostController::class, 'create']);
-Route::get('/posts', [PostController::class, 'index']);
+
+
+
 
 Route::get('/champions', [ChampionController::class, 'fetchAndShowChampions']);
-Route::get('/sync-champions', [ChampionController::class, 'syncChampions']);
 Route::get('/champions/show', [ChampionController::class, 'listChampions']);
+
+Route::get('/sync-champions', [ChampionController::class, 'syncChampions']);
+Route::get('/sync-items', [ItemController::class, 'syncItems'])->name('items.sync');
+Route::get('/sync-runes', [RuneController::class, 'syncRunes'])->name('runes.sync');
+
+Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
+Route::get('/posts/{post}', [PostController::class, 'show'])->name('posts.show');
+Route::get('/posts/create/{champion}', [PostController::class, 'create'])->name('posts.create');
+Route::get('/posts/champion/{champion}', [PostController::class, 'indexByChampion'])->name('posts.byChampion');
+Route::get('/posts/{champion}', [PostController::class, 'index'])->name('posts.index');
+Route::get('/champions/{champion}/posts', [PostController::class, 'listByChampion'])->name('champions.posts');
+
 
 require __DIR__.'/auth.php';

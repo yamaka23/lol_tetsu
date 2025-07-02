@@ -1,108 +1,74 @@
-<!DOCTYPE html>
-<!--
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    
-    <head>
-        <meta charset="utf-8">
-        <title>Blog</title>
-        
-        <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
-    </head>
-    <body>
-        <h1>Blog Name</h1>
-        <a href='/posts/create'>create</a>
-        <div class='posts'>
-            @foreach ($posts as $post)
-                <div class='post'>
-                    <h2 class='title'>
-                        <a href="/posts/{{ $post->id }}">{{ $post->title }}</a>
-                    </h2>
-                    <a href="/categories/{{ $post->category->id }}">{{ $post->category->name }}</a>
-
-                    <p class='body'>{{ $post->body }}</p>
-
-                    <form action="/posts/{{ $post->id }}" id="form_{{ $post->id }}" method="post">
-                        @csrf
-                        @method('DELETE')
-                        <button type="button" onclick="deletePost({{ $post->id }})">delete</button> 
-                    </form>
-                </div>
-            @endforeach
-            {{ Auth::user()->name }}
-        </div>
-
-        <div class='paginate'>
-            {{ $posts->links() }}    
-        </div>
-
-        <script>
-            function deletePost(id) {
-                'use strict'
-
-                if (confirm('削除すると復元できません。\n本当に削除しますか？')) {
-                    document.getElementById(`form_${id}`).submit();
-                }
-            }
-        </script>    
-    </body>
-</html>
--->
-
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Blog一覧
-        </h2>
+        <div class="flex justify-between items-center">
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                {{ $champion->name }} の投稿一覧
+            </h2>
+            
+            {{-- 新規投稿作成ボタン --}}
+            <a href="/posts/create/{{ $champion->id }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">
+                新規投稿を作成
+            </a>
+            
+        </div>
     </x-slot>
 
-    <div class="py-12 max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <a href='/posts/create' class="text-blue-600 underline">create</a>
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 bg-white border-b border-gray-200">
 
-        <div class='posts mt-4'>
-            @foreach ($posts as $post)
-                <div class='post border p-4 mb-4'>
-                    <h2 class='title text-xl font-bold'>
-                        <a href="/posts/{{ $post->id }}">{{ $post->title }}</a>
-                    </h2>
-                    <a href="/categories/{{ $post->category->id }}" class="text-sm text-gray-600">
-                        {{ $post->category->name }}
-                    </a>
+                    @if($posts->isEmpty())
+                        <div class="text-center py-12">
+                            <p class="text-lg text-gray-500">このチャンピオンに関する投稿はまだありません。</p>
+                            <p class="text-sm text-gray-400 mt-2">最初の投稿をしてみましょう！</p>
+                        </div>
+                    @else
+                        <div class="space-y-6">
+                            @foreach($posts as $post)
+                                <div class="p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <a href="{{ route('posts.show', $post) }}">
+                                                <h3 class="text-xl font-bold text-gray-900 hover:text-blue-600 transition-colors">
+                                                    {{ $post->title }}
+                                                </h3>
+                                            </a>
+                                            <div class="flex items-center space-x-4 text-sm text-gray-500 mt-1">
+                                                <span>
+                                                    <strong>レーン:</strong> {{ $post->lane->name ?? '未設定' }}
+                                                </span>
+                                                <span>
+                                                    <strong>投稿者:</strong> {{ $post->user->name ?? '匿名' }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="text-right text-sm text-gray-500">
+                                            <span>{{ $post->created_at->format('Y/m/d') }}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <p class="mt-4 text-gray-700 leading-relaxed">
+                                        {{ Str::limit($post->content, 150) }}
+                                    </p>
+                                    
+                                    <div class="text-right mt-4">
+                                        <a href="{{ route('posts.show', $post) }}" class="text-sm font-semibold text-blue-600 hover:text-blue-800">
+                                            続きを読む &rarr;
+                                        </a>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
 
-                    <p class='body mt-2'>{{ $post->body }}</p>
+                        {{-- ページネーション --}}
+                        <div class="mt-8">
+                            {{ $posts->links() }}
+                        </div>
+                    @endif
 
-                    <form action="/posts/{{ $post->id }}" id="form_{{ $post->id }}" method="post" class="mt-2">
-                        @csrf
-                        @method('DELETE')
-                        <button type="button" onclick="deletePost({{ $post->id }})" class="text-red-500">delete</button>
-                    </form>
                 </div>
-            @endforeach
-
-            <p class="text-gray-500">ログインユーザー：{{ Auth::user()->name }}</p>
+            </div>
         </div>
-
-        <div class='paginate mt-8'>
-            {{ $posts->links() }}    
-        </div>
-
-        <div>
-            @foreach($questions as $question)
-                <div>
-                    <a href="https://teratail.com/questions/{{ $question['id'] }}">
-                        {{ $question['title'] }}
-                    </a>
-                </div>
-            @endforeach
-        </div>
-
-        <script>
-            function deletePost(id) {
-                'use strict';
-                if (confirm('削除すると復元できません。\n本当に削除しますか？')) {
-                    document.getElementById(`form_${id}`).submit();
-                }
-            }
-        </script>
     </div>
 </x-app-layout>
-
