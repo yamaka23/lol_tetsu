@@ -49,7 +49,6 @@ class ChampionController extends Controller
                         [
                             'name' => $details['name'],
                             'image' => $details['image']['full'] ?? null,
-                            'difficulty' => $details['info']['difficulty'] ?? null,
                             'version' => $latestVersion,
                         ]
                     );

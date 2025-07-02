@@ -1,68 +1,51 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>チャンピオン一覧</title>
-    <style>
-        /* ... (スタイルは前回と同様) ... */
-        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
-        h1 { text-align: center; color: #1e3a5f; }
-        .champions-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
-        .champion-card {
-            background-color: #fff;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 15px;
-            text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .champion-card img {
-            width: 100px; height: 100px; object-fit: cover;
-            border-radius: 4px; margin-bottom: 10px;
-        }
-        .champion-card h2 { font-size: 1.1em; margin: 10px 0 5px; color: #0a1d36; }
-        .champion-card .difficulty { font-size: 0.9em; color: #777; margin-top: 5px; }
-        .message { text-align: center; font-size: 1.1em; margin-top: 30px; }
-    </style>
-</head>
-<body>
-    <h1>チャンピオン一覧</h1>
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            チャンピオン一覧
+        </h2>
+    </x-slot>
 
-    @if(isset($message))
-        <p class="message">{{ $message }}</p>
-    @endif
-
-    @if($champions->isNotEmpty())
-        <div class="champions-grid">
-            @foreach($champions as $champion)
-                <div class="champion-card">
-                    @if($champion->image && $champion->version)
-                        <img src="https://ddragon.leagueoflegends.com/cdn/{{ $champion->version }}/img/champion/{{ $champion->image }}" alt="{{ $champion->name }}">
-                    @else
-                        <div style="width:100px; height:100px; background:#eee; margin:0 auto 10px; display:flex; align-items:center; justify-content:center;">No Image</div>
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 bg-white border-b border-gray-200">
+                    
+                    @if(isset($message))
+                        <div class="text-center text-lg text-gray-600 my-6">
+                            {{ $message }}
+                        </div>
                     @endif
-                    <h2>{{ $champion->name }}</h2>
-                    <p class="difficulty">難易度: {{ $champion->difficulty ?? 'N/A' }}</p>
+
+                    @if($champions->isNotEmpty())
+                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                            @foreach($champions as $champion)
+                                <div class="bg-white border border-gray-200 rounded-lg shadow hover:shadow-md transition p-4 text-center">
+                                    @if($champion->image && $champion->version)
+                                        <a href="/champions/{{ $champion->id }}/posts" class="block mb-2">
+                                            <img 
+                                                src="https://ddragon.leagueoflegends.com/cdn/{{ $champion->version }}/img/champion/{{ $champion->image }}" 
+                                                alt="{{ $champion->name }}"
+                                                class="w-24 h-24 mx-auto object-cover rounded-md"
+                                            >
+                                        </a>
+                                    @else
+                                        <div class="w-24 h-24 mx-auto bg-gray-200 flex items-center justify-center rounded-md mb-2">
+                                            <span class="text-gray-500">No Image</span>
+                                        </div>
+                                    @endif
+
+                                    <h3 class="text-md font-semibold text-gray-800 mt-2">{{ $champion->name }}</h3>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        @unless(isset($message))
+                            <p class="text-center text-gray-600">表示できるチャンピオンがいません。</p>
+                        @endunless
+                    @endif
+
                 </div>
-            @endforeach
+            </div>
         </div>
-    @else
-        @unless(isset($message))
-            <p class="message">表示できるチャンピオンがいません。</p>
-        @endunless
-    @endif
-</body>
-</html>
-
-
-
-
-
-
-
-
-
-
-
-
+    </div>
+</x-app-layout>

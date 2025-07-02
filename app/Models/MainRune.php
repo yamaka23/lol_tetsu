@@ -4,25 +4,20 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Post;
+use App\Models\Rune; // Runeモデルをuseする
 
-class Champion extends Model
+class MainRune extends Model
 {
     use HasFactory;
-
     protected $primaryKey = 'id';
     public $incrementing = false;
-    protected $keyType = 'string';
     protected $fillable = [
         'id',
         'name',
-        'image',
-        'version',
-        'language',
+        'icon',
     ];
-
-    public function posts()
+    public function runes()
     {
-        return $this->hasMany(Post::class);
+        return $this->hasMany(Rune::class);
     }
 }
